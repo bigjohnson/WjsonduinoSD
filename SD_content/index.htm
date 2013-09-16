@@ -1,0 +1,350 @@
+<html>
+	<head>
+		<title>wjsonduino</title>
+		<SCRIPT language="JavaScript">
+			<!--hide from old browsers
+
+			var ciclo = 500 ;
+			var tempomassimo = 1500;
+			var midanalog=511;
+			var intervallo;
+			var lastexecutiontime;
+			var ajaxisrunning;
+                        var port_high = "HIGH";
+                        var port_low = "LOW";
+
+			function ajaxObject(url, callbackFunction) {
+				var that=this;
+				this.updating = false;
+				this.abort = function() {
+					if (that.updating) {
+						that.updating=false;
+						that.AJAX.abort();
+						that.AJAX=null;
+					}
+				}
+				this.update = function(passData,postMethod) {
+				if (that.updating) { return false; }
+					that.AJAX = null;
+					if (window.XMLHttpRequest) {
+						that.AJAX=new XMLHttpRequest();
+					} else {
+						that.AJAX=new ActiveXObject("Microsoft.XMLHTTP");
+					}
+					if (that.AJAX==null) {
+						return false;
+					} else {
+						that.AJAX.onreadystatechange = function() {
+							if (that.AJAX.readyState==4) {
+								that.updating=false;
+								that.callback(that.AJAX.responseText,that.AJAX.status,that.AJAX.responseXML);
+								that.AJAX=null;
+							}
+						}
+						that.updating = new Date();
+						if (/post/i.test(postMethod)) {
+							var uri=urlCall+'?'+that.updating.getTime();
+							that.AJAX.open("POST", uri, true);
+							that.AJAX.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+							that.AJAX.setRequestHeader("Content-Length", passData.length);
+							that.AJAX.send(passData);
+						} else {
+							var uri=urlCall+'?'+passData+'&timestamp='+(that.updating.getTime());
+							that.AJAX.open("GET", uri, true);
+							that.AJAX.send(null);
+						}
+						return true;
+					}
+				}
+				var urlCall = url;
+				this.callback = callbackFunction || function () { };
+			}
+
+			function processData(JSONData) {
+                                if (buttonstart.disabled) {
+				ajaxisrunning = true;
+
+				avviso.firstChild.data="Arduino connected";
+
+				if (JSONData.IO2 == "H") {
+					IO2.style.backgroundColor="green";
+				        IO2.firstChild.data=port_high;
+				} else {
+					IO2.style.backgroundColor="red";
+				        IO2.firstChild.data=port_low;
+				}
+
+				if (JSONData.IO3 == "H") {
+					IO3.style.backgroundColor="green";
+				        IO3.firstChild.data=port_high;
+				} else {
+					IO3.style.backgroundColor="red";
+				        IO3.firstChild.data=port_low;
+				}
+
+				if (JSONData.IO5 == "H") {
+					IO5.style.backgroundColor="green";
+				        IO5.firstChild.data=port_high;
+				} else {
+					IO5.style.backgroundColor="red";
+				        IO5.firstChild.data=port_low;
+				}
+
+				if (JSONData.IO6 == "H") {
+					IO6.style.backgroundColor="green";
+				        IO6.firstChild.data=port_high;
+				} else {
+					IO6.style.backgroundColor="red";
+				        IO6.firstChild.data=port_low;
+				}
+
+				if (JSONData.IO7 == "H") {
+					IO7.style.backgroundColor="green";
+				        IO7.firstChild.data=port_high;
+				} else {
+					IO7.style.backgroundColor="red";
+				        IO7.firstChild.data=port_low;
+				}
+
+				if (JSONData.IO8 == "H") {
+					IO8.style.backgroundColor="green";
+				        IO8.firstChild.data=port_high;
+				} else {
+					IO8.style.backgroundColor="red";
+				        IO8.firstChild.data=port_low;
+				}
+
+				if (JSONData.IO9 == "H") {
+					IO9.style.backgroundColor="green";
+				        IO9.firstChild.data=port_high;
+				} else {
+					IO9.style.backgroundColor="red";
+				        IO9.firstChild.data=port_low;
+				}
+
+				AD0.firstChild.data=JSONData.AD0;
+				PAD0.value=JSONData.AD0;
+				if (JSONData.AD0 > midanalog) {
+					AD0.style.backgroundColor="green";
+				} else {
+					AD0.style.backgroundColor="red";
+				}
+
+				AD1.firstChild.data=JSONData.AD1;
+				PAD1.value=JSONData.AD1;
+				if (JSONData.AD1 > midanalog) {
+					AD1.style.backgroundColor="green";
+				} else {
+					AD1.style.backgroundColor="red";
+				}
+
+				AD2.firstChild.data=JSONData.AD2;
+				PAD2.value=JSONData.AD2;
+				if (JSONData.AD2 > midanalog) {
+					AD2.style.backgroundColor="green";
+				} else {
+					AD2.style.backgroundColor="red";
+				}
+
+				AD3.firstChild.data=JSONData.AD3;
+				PAD3.value=JSONData.AD3;
+				if (JSONData.AD3 > midanalog) {
+					AD3.style.backgroundColor="green";
+				} else {
+					AD3.style.backgroundColor="red";
+				}
+
+				AD4.firstChild.data=JSONData.AD4;
+				PAD4.value=JSONData.AD4;
+				if (JSONData.AD4 > midanalog) {
+					AD4.style.backgroundColor="green";
+				} else {
+					AD4.style.backgroundColor="red";
+				}
+
+				AD5.firstChild.data=JSONData.AD5;
+				PAD5.value=JSONData.AD5;
+				if (JSONData.AD5 > midanalog) {
+					AD5.style.backgroundColor="green";
+				} else {
+					AD5.style.backgroundColor="red";
+				}
+
+				var d1 = new Date();
+				lastexecutiontime=d1.getTime();
+
+				ajaxisrunning = false;
+                                }
+			}
+
+			function cambiacolore(colore) {
+				IO2.style.backgroundColor=colore;
+                                IO2.firstChild.data="XX"
+				IO3.style.backgroundColor=colore;
+                                IO3.firstChild.data="XX"
+				IO5.style.backgroundColor=colore;
+                                IO5.firstChild.data="XX"
+				IO6.style.backgroundColor=colore;
+                                IO6.firstChild.data="XX"
+				IO7.style.backgroundColor=colore;
+                                IO7.firstChild.data="XX"
+				IO8.style.backgroundColor=colore;
+                                IO8.firstChild.data="XX"
+				IO9.style.backgroundColor=colore;
+                                IO9.firstChild.data="XX"
+				AD0.style.backgroundColor=colore;
+                                AD0.firstChild.data="XX"
+                                PAD0.value=0;
+				AD1.style.backgroundColor=colore;
+                                AD1.firstChild.data="XX"
+                                PAD1.value=0;
+				AD2.style.backgroundColor=colore;
+                                AD2.firstChild.data="XX"
+                                PAD2.value=0;
+				AD3.style.backgroundColor=colore;
+                                AD3.firstChild.data="XX"
+                                PAD3.value=0;
+				AD4.style.backgroundColor=colore;
+                                AD4.firstChild.data="XX"
+                                PAD4.value=0;
+				AD5.style.backgroundColor=colore;
+                                AD5.firstChild.data="XX"
+                                PAD5.value=0;
+
+			}
+
+			function fai() {
+
+				var d1 = new Date();
+				var adesso=d1.getTime();
+				var miadifferenza=adesso-lastexecutiontime;
+				momento_differenza.firstChild.data=miadifferenza + " ms from last refresh";
+
+				if ( miadifferenza > tempomassimo ) {
+					cambiacolore("yellow");
+					avviso.firstChild.data="Arduino connection error!";
+				}
+
+				var ajaxRequest = new ajaxObject('/json');
+				ajaxRequest.callback = function (responseText) {
+					eval(responseText);
+				}
+				ajaxRequest.update();
+			}
+
+			function ferma() {
+				clearInterval(intervallo);
+				buttonstart.disabled=false;
+				while (ajaxisrunning) {
+					// aspetta che la funzione di json lanciata da arduino termini e poi cancella il messaggio
+				}
+				cambiacolore("aquamarine");
+				avviso.firstChild.data="Suspended app, to run click on Start";
+                                momento_differenza.firstChild.data="X";                               
+				buttonferma.disabled=true;
+			}
+
+			function avvia() {
+				var d1 = new Date();
+				lastexecutiontime=d1.getTime();
+				intervallo = setInterval('fai()',ciclo);
+				buttonferma.disabled=false;
+				buttonstart.disabled=true;
+                                messaggio.firstChild.data="Refresh time " + ciclo + " ms, timeout " + tempomassimo + " ms";
+			}
+
+			function inizia() {
+//				message.firstChild.data="Refresh time " + ciclo + " Timeout time " + tempomassimo;
+                                ferma();
+				avvia();
+			}
+//-->
+</SCRIPT>
+	</head>
+		<body onload="javascript:inizia();">
+			<div align="center">
+                        <h1>Arduino json ports status</h1>
+			<div id="momento_differenza">milliseconds from last refresh</div>
+                        <div id="avviso">Suspended app, to run click on Start<div><br>
+		<FORM>
+			<INPUT type="button" value="Start" name="button1" onClick="javascript:avvia();" disabled="true" id="buttonstart">
+			<INPUT type="button" value="Stop" name="button2" onClick="javascript:ferma();" id="buttonferma">
+		</FORM>
+		<table border="1">
+                        <tr>
+                        	<th>Digital inputs</th>
+				<th>Values</th>
+                        </tr>
+                        <tr>
+				<td align="center">2</td>
+				<td id="IO2" align="center">XX</td>
+			</tr>
+			<tr>
+				<td align="center">3</td>
+				<td id="IO3" align="center">XX</td>
+			</tr>
+			<tr>
+				<td align="center">5</td>
+				<td id="IO5" align="center">XX</td>
+			</tr>
+			<tr>
+				<td align="center">6</td>
+				<td id="IO6" align="center">XX</td>
+			</tr>
+			<tr>
+				<td align="center">7</td>
+				<td id="IO7" align="center">XX</td>
+			</tr>
+			<tr>
+				<td align="center">8</td>
+			        <td id="IO8" align="center">XX</td>
+			</tr>
+			<tr>
+				<td align="center">9</td>
+				<td id="IO9" align="center">XX</td>
+			</tr>
+	         </table>
+	<br>
+	<br>
+	<table border="1">
+		<tr>
+                        <th align="center">Analogs inputs</th>
+	                <th align="center">Values</th>
+                        <th align="center">Bars</th>
+                </tr>
+                <tr>
+			<td align="center">0</td>
+			<td id="AD0" align="center">NO</td>
+			<td><progress value="0" max="1023" id="PAD0"></progress></td>
+		</tr>
+		<tr>
+			<td align="center">1</td>
+			<td id="AD1" align="center">NO</td>
+			<td><progress value="0" max="1023" id="PAD1"></progress></td>
+		</tr>
+		<tr>
+			<td align="center">2</td>
+			<td id="AD2" align="center">NO</td>
+			<td><progress value="0" max="1023" id="PAD2"></progress></td>
+		</tr>
+		<tr>
+			<td align="center">3</td>
+			<td id="AD3" align="center">NO</td>
+			<td><progress value="0" max="1023" id="PAD3"></progress></td>
+		</tr>
+		<tr>
+			<td align="center">4</td>
+			<td id="AD4" align="center">NO</td>
+			<td><progress value="0" max="1023" id="PAD4"></progress></td>
+		</tr>
+		<tr>
+			<td align="center">5</td>
+			<td id="AD5" align="center">NO</td>
+			<td><progress value="0" max="1023" id="PAD5"></progress></td>
+		</tr>
+	</table>
+                <br><br><div id="messaggio"> </div>
+                <br>Don't exaggerate with the number of client, Arduino has an 8 bit 16 MHz cpu! 
+		</div>
+	</body>
+</html
